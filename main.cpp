@@ -1,120 +1,148 @@
 // Kenna Draxton
-// Code breaker training simulation for CIA recruits
+// KEYWORDS 2
 
 #include <iostream>
 #include <string>
-#include <cstdlib>
+#include <vector>
+#include <algorithm>
 #include <ctime>
+#include <cctype>
 
 using namespace std;
 
-
 int main()
 {
-    //the flag to give the loop clearance
-    bool playAgain = false;
-    
-    do
-   {
-    //saying that we will loop through 3 times
-    for (int i= 0; i < 3; i++)
     {
-        //letting the player know they will have three words to guess
+    bool playAgain = false;
+    //where do you start; where to stop; how do we get there
+    for(int i = 0; i<3; i++)
+    //i++, i = i+1 same thing
+    {
+    
+    
+    
+    // Display Title of program to user
+    cout<< "\tKeywords 2\n"<<endl;
+    // set-up
+    const int MAX_WRONG = 8;  // maximum number of incorrect guesses allowed
+    
+    
+    //create a collection of 10 words
+    vector<string> words;
+    words.push_back("ZOOM");
+    words.push_back("DOUBLE");
+    words.push_back("AGENT");
+    words.push_back("EUROPE");
+    words.push_back("COVERT");
+    words.push_back("BOND");
+    words.push_back("PASSPORT");
+    words.push_back("UNDERCOVER");
+    words.push_back("POLICE");
+    words.push_back("INVESTIGATE");
+    
+    srand(static_cast<unsigned int>(time(0)));
+    random_shuffle(words.begin(), words.end());
+    const string THE_WORD = words[0];            // word to guess
+    int wrong = 0;                               // number of incorrect guesses
+    string soFar(THE_WORD.size(), '-');          // word guessed so far
+    string used = "";                            // letters already guessed
+    //hold the recruit's name in a variable, and address them by it throughout the simulation
+    string userName;
+    
+    
+    //ask the recruit to login using their name
+    cout<< "Please enter your name:"<<endl;
+    cin>> userName;
+    cout<< "Hello " << userName << "!\n"<< endl;
+    
+    //display an overview of Keywords 2 to the user
+    cout<< "In this simulation you have to guess what the words are by guessing letters, you will be told along the way if those letters are in your word or not.....\n" << endl;
+    
+    //display directions on how to play
+    cout << "Select letters that you think are part of the coded words, we will place them in the word if they belong and give you another chance!\n" << endl;
+    
+    
+    cout << "Welcome to Keywords 2.  Good luck!\n";
+        
+        
+    
+    // main loop
+    while ((wrong < MAX_WRONG) && (soFar != THE_WORD))
+    {
+     
+        //letting the recruit know they will have three words to guess
+        //and what simulation number they are on
         cout << "This is simulation " << i+1 << " of 3."<< endl;
         
-        //giving the array categories
-        enum fields {WORD, HINT, NUM_FIELDS};
-        //telling us there are 10 words to guess from
-        const int NUM_WORDS = 10;
-        const string WORDS[NUM_WORDS][NUM_FIELDS] =
-        //words to guess with their accompanying hints
         
-        {
-            {"apple","fruit"},
-            {"carrot","vegetable"},
-            {"dog","animal"},
-            {"blue","color"},
-            {"square","shape"},
-            {"three","number"},
-            {"feather","soft"},
-            {"cement","hard"},
-            {"cactus","Arizona"},
-            {"van","car"}
-
-        };
-        //seeds the random word from our given array
-        srand(static_cast<unsigned int>(time(0)));
+        cout << "\n\nYou have " << (MAX_WRONG - wrong);
+        cout << " incorrect guesses left.\n";
+        cout << "\nYou've used the following letters:\n" << used << endl;
+        cout << "\nSo far, the word is:\n" << soFar << endl;
         
-        int choice = (rand() % NUM_WORDS);
-        //word to guess
-        string theWord = WORDS[choice][WORD];
-         // hint for word
-        string theHint = WORDS[choice][HINT];
-    
-        //word mixed up
-        string jumble = theWord;
-        int length = jumble.size();
-        for (int i=0; i<length; ++i)
-        {
-            int index1 = (rand() % length);
-            int index2 = (rand() % length);
-            char temp = jumble[index1];
-            jumble[index1] = jumble[index2];
-            jumble[index2] = temp;
-        }
-    
-        //intro to player
-        cout << "\t\t\tWelcome to CIA code breaker training!\n\n";
-        cout << "Decode the three words.\n";
-        cout << "Enter 'hint' for a hint.\n";
-        cout << "Enter 'quit' to quit the game.\n\n";
-        //showing the word that needs to be decoded
-        cout << "The code is: " << jumble;
-    
-        //users guess
-        string guess;
-        cout << "\n\nYour guess: ";
+        char guess;
+        cout << "\n\nEnter your guess: ";
         cin >> guess;
-    
-        
-        while ((guess != theWord) && (guess != "quit"))
+        //make uppercase since secret word in uppercase
+        guess = toupper(guess);
+        while (used.find(guess) != string::npos)
         {
-            if (guess == "hint")
-            {
-                cout << theHint;
-            }
-            else
-            {
-                cout << "Sorry, that's not it.";
-            }
-            
-            cout <<"\n\nYour guess: ";
+            cout << "\nYou've already guessed " << guess << endl;
+            cout << "Enter your guess: ";
             cin >> guess;
+            guess = toupper(guess);
         }
-    
-        if (guess == theWord)
-        {
-            cout << "\nThat's it!  You guessed it!\n";
-        }
-    
-        cout << "\nThanks for playing.\n";
         
+        used += guess;
+        
+        if (THE_WORD.find(guess) != string::npos)
+        {
+            cout << "That's right! " << guess << " is in the word.\n";
+            
+            // update soFar to include newly guessed letter
+            for (unsigned int i = 0; i < THE_WORD.length(); ++i)
+            {
+                if (THE_WORD[i] == guess)
+                {
+                    soFar[i] = guess;
+                }
+            }
+        }
+        else
+        {
+            cout << "Sorry, " << guess << " isn't in the word.\n";
+            ++wrong;
+        }
     }
-       //asking the user if they want to play again
-       cout << "would you like to play again: y/n: ";
-       char userChoice;
-       cin >> userChoice;
+    
+    // shut down
+    if (wrong == MAX_WRONG)
+        cout << "\nRECRUIT!!! :( !";
+    else
+        cout << "\nYou guessed it!";
+    
+    cout << "\nThe word was " << THE_WORD << endl;
+    }
+    
+        //asking the recruit if they want to play again
+        cout << "would you like to play again: y/n: ";
+        char userChoice;
+        cin >> userChoice;
         if(userChoice == 'y' || userChoice == 'Y')
         {
             playAgain = true;
         }
-       else
-       {
-           playAgain = false;
-       }
-         cout << "\nThanks for playing.\n";
-   
-   
-   }while (playAgain);
+        else
+        {
+            playAgain = false;
+        }
+        cout << "\nThanks for playing.\n";
+        
+        
+    
+    while (playAgain);
+    
     return 0;
+
+}
 }
